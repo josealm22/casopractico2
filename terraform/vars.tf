@@ -9,3 +9,22 @@ variable "vm_size" {
 	description = "Tamaño de la maquina"
 	default = "Standard_B1s" # 1 GB, 1 CPU
 }
+variable "subscription_id" {
+  description = "Azure Subscription ID"
+  type        = string
+}
+
+variable "client_id" {
+  description = "Azure Client ID for the Service Principal"
+  type        = string
+}
+
+variable "client_secret" {
+  description = "Azure Client Secret for the Service Principal"
+  type        = string
+}
+
+variable "tenant_id" {
+  description = "Azure Tenant ID"
+  type        = string
+}
