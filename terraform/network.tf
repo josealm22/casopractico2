@@ -5,7 +5,7 @@ resource "azurerm_virtual_network" "myNet" {
 	name			= "kubernetesnet"
 	address_space		= ["10.0.0.0/16"]
 	location		= azurerm_resource_group.rg.location
-	reosource_group_name	= azurerm_resource_group.rg.name
+	resource_group_name	= azurerm_resource_group.rg.name
 
 	tags = {
 		environment = "CP2"
@@ -25,7 +25,7 @@ resource "azurerm_subnet" "mySubnet" {
 
 resource "azurerm_network_interface" "myNic1" {
 	name			= "vmnic1"
-	location		= azurerm_resource_group.rg.loaction
+	location		= azurerm_resource_group.rg.location
 	resource_group_name	= azurerm_resource_group.rg.name
 
 		ip_configuration {
