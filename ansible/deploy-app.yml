@@ -1,0 +1,36 @@
+- hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: Crear namespace si no existe
+      kubernetes.core.k8s:
+        kubeconfig: "/home/ubuntu/.kube/config"
+        state: present
+        kind: Namespace
+        name: nginxcp2
+
+    - name: Desplegar Nginx en AKS
+      community.kubernetes.k8s:
+        kubeconfig: "/home/ubuntu/.kube/config"
+        state: present
+        namespace: nginxcp2
+        definition:
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: nginx
+          spec:
+            replicas: 1
+            selector:
+              matchLabels:
+                app: nginx
+            template:
+              metadata:
+                labels:
+                  app: nginx
+              spec:
+                containers:
+                - name: nginx
+                  image: acrcp2dv.azurecr.io/nginx:latest
+                  ports:
+                  - containerPort: 80
+
