@@ -1,0 +1,37 @@
+- name: Obtener la dirección IP pública de una VM en Azure
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: Obtener información de la NIC
+      azure.azcollection.azure_rm_networkinterface_info:
+        resource_group: kubernetes_rg
+        name: vmnic1
+      register: nic_info
+
+    - name: Mostrar información de NIC obtenida
+      debug:
+        var: nic_info
+
+    - name: Obtener ID de la IP pública asociada
+      set_fact:
+        public_ip_id: "{{ nic_info.networkinterfaces[0].ip_configurations[0].public_ip_address }}"
+
+    - name: Mostrar ID de la IP pública
+      debug:
+        var: public_ip_id
+
+    - name: Obtener detalles de la dirección IP pública
+      azure.azcollection.azure_rm_publicipaddress_info:
+        resource_group: kubernetes_rg
+        name: "{{ public_ip_id | regex_replace('^.*/([^/]*)$', '\\1') }}"
+      register: public_ip_info
+
+    - name: Mostrar dirección IP pública
+      debug:
+        var: public_ip_info.publicipaddresses[0].ip_address
+    - name: Guardar la dirección IP pública en un archivo
+      copy:
+        content: |
+
+          vm_public_ip: "{{ public_ip_info.publicipaddresses[0].ip_address }}"
+        dest: "../vm_details.yml"
