@@ -1,3 +1,6 @@
 terraform/terraform.tfvars
 terraform/.terraform
 terraform/.terraform.lock.hcl
+acr_details.yml
+acr_creds.yml
+

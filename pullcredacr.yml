@@ -1,0 +1,40 @@
+---
+- name: Habilitar el usuario administrador del ACR y obtener credenciales
+  hosts: localhost
+  gather_facts: no
+  vars:
+    acr_name: acrcp2dv
+    resource_group: kubernetes_rg
+
+  tasks:
+    - name: Habilitar el usuario administrador del ACR (si es necesario)
+      ansible.builtin.command: az acr update -n {{ acr_name }} --admin-enabled true
+      register: admin_enabled
+
+    - name: Obtener credenciales del ACR
+      ansible.builtin.command: az acr credential show -n {{ acr_name }}
+      register: acr_credentials
+
+    - name: Mostrar credenciales (solo para depuración, remover para uso en producción)
+      ansible.builtin.debug:
+        msg: "{{ acr_credentials.stdout | from_json }}"
+
+    - name: Guardar credenciales en archivo
+      ansible.builtin.copy:
+        content: |
+          acr_username: "{{ (acr_credentials.stdout | from_json).username }}"
+          acr_password: "{{ (acr_credentials.stdout | from_json).passwords[0].value }}"
+        dest: "/home/ubuntu/casopractico2/casopractico2/acr_creds.yml"
+
+    - name: Obtener información ACR
+      ansible.builtin.command: az acr show --name {{ acr_name }} --resource-group {{ resource_group }}
+      register: acr_info
+
+    - name: Guardar detalles del ACR en archivo
+      ansible.builtin.copy:
+        content: |
+          login_server: "{{ (acr_info.stdout | from_json).loginServer }}"
+          name: "{{ acr_name }}"
+          location: "{{ (acr_info.stdout | from_json).location }}"
+          sku: "{{ (acr_info.stdout | from_json).sku.name }}"
+        dest: "/home/ubuntu/casopractico2/casopractico2/acr_details.yml"
