@@ -1,6 +1,6 @@
 # Grupo de seguridad
 
-resorce "azurerm_network_security_group" "cp2SecGroup" {
+resource "azurerm_network_security_group" "cp2SecGroup" {
     name                = "traficossh"
     location            = azurerm_resource_group.rg.location
     resource_group_name = azurerm_resource_group.rg.name
@@ -16,6 +16,17 @@ resorce "azurerm_network_security_group" "cp2SecGroup" {
         source_address_prefix       = "*"
         destination_address_prefix  = "*"
     }
+    security_rule {
+        name                        = "HTTP"
+        priority                    = 1002
+        direction                   = "Inbound"
+        access                      = "Allow"
+        protocol                    = "Tcp"
+        source_port_range           = "*"
+        destination_port_range      = "80"
+        source_address_prefix       = "*"
+        destination_address_prefix  = "*"
+    }
 
     tags = {
         environment = "CP2"
@@ -23,7 +34,7 @@ resorce "azurerm_network_security_group" "cp2SecGroup" {
 }
 
 
-resource "azurerm_network_interface_security_group_association" "mySecGroupAssociation1" {
+resource "azurerm_network_interface_security_group_association" "cp2SecGroupAssociation1" {
     network_interface_id      = azurerm_network_interface.myNic1.id
-    network_security_group_id = azurerm_network_security_group.mySecGroup.id
+    network_security_group_id = azurerm_network_security_group.cp2SecGroup.id
 }
