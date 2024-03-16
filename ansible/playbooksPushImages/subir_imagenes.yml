@@ -1,0 +1,32 @@
+---
+- name: Importar imágenes a Azure Container Registry si no existen
+  hosts: localhost
+  gather_facts: no
+  vars:
+    acr_name: acrcp2dv
+  tasks:
+    - name: Verificar si la imagen de Nginx existe en ACR
+      command: az acr repository show --name {{ acr_name }} --repository nginx
+      register: nginx_exist
+      ignore_errors: yes
+
+    - name: Importar imagen de Nginx desde Docker Hub a ACR si no existe
+      command: >
+        az acr import
+        --name {{ acr_name }}
+        --source docker.io/library/nginx:latest
+        --image nginx:latest
+      when: nginx_exist is failed
+
+    - name: Verificar si la imagen de OwnCloud existe en ACR
+      command: az acr repository show --name {{ acr_name }} --repository owncloud
+      register: owncloud_exist
+      ignore_errors: yes
+
+    - name: Importar imagen de OwnCloud desde Docker Hub a ACR si no existe
+      command: >
+        az acr import
+        --name {{ acr_name }}
+        --source docker.io/library/owncloud:latest
+        --image owncloud:latest
+      when: owncloud_exist is failed

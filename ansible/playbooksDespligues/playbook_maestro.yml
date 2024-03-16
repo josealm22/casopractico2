@@ -1,0 +1,4 @@
+---
+
+- import_playbook: /home/ubuntu/casopractico2/casopractico2/ansible/playbooksPushImages/subir_imagenes.yml
+- import_playbook: /home/ubuntu/casopractico2/casopractico2/ansible/playbooksDespligues/despliegue_nginx.yml

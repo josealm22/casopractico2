@@ -1,0 +1,36 @@
+---
+- name: Desplegar Nginx en Azure VM con Podman
+  hosts: webservers
+  become: yes
+  vars_files:
+    - ~/casopractico2/casopractico2/acr_details.yml
+    - ~/casopractico2/casopractico2/acr_creds.yml
+    - ~/casopractico2/casopractico2/vm_details.yml
+  tasks:
+    
+    - name: Instalar Podman
+      ansible.builtin.yum:
+        name: podman
+        state: latest
+
+    - name: Inicio de sesion en ACR
+      containers.podman.podman_login:
+        registry: "{{ login_server }}"
+        username: "{{ acr_username }}"
+        password: "{{ acr_password }}"
+
+    - name: Extraer imagen de Nginx desde ACR
+      ansible.builtin.command: >
+        podman pull "{{ login_server }}/nginx:latest"
+
+
+    - name: Iniciar contenedor Nginx desde ACR
+      containers.podman.podman_container:
+        name: nginx
+        image: "{{ login_server }}/nginx:latest"
+        state: started
+        ports:
+          - "80:80"
+        env:
+          ACR_USERNAME: "{{ acr_username }}"
+          ACR_PASSWORD: "{{ acr_password }}"

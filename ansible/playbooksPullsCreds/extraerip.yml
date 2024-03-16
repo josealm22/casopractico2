@@ -33,5 +33,5 @@
       copy:
         content: |
 
-          vm_public_ip: "{{ public_ip_info.publicipaddresses[0].ip_address }}"
-        dest: "../vm_details.yml"
+          vm_public_ip: "{{ public_ip_info.publicipaddresses[0].ip_address | quote | regex_replace('\"', "")}}"
+        dest: "../../vm_details.yml"
