@@ -40,3 +40,13 @@ resource "azurerm_linux_virtual_machine" "myVM1" {
 		environment = "CP2"
 	}
 }		
+
+resource "null_resource" "add_ssh_key" {
+  depends_on = [
+    azurerm_linux_virtual_machine.myVM1,
+  ]
+
+  provisioner "local-exec" {
+    command = "ssh-keyscan -H ${azurerm_public_ip.myPublicIp1.ip_address} >> ~/.ssh/known_hosts"
+  }
+}
