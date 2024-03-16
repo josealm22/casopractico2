@@ -12,6 +12,14 @@ ansible-playbook /home/ubuntu/casopractico2/casopractico2/ansible/playbooksPulls
 
 ansible-playbook /home/ubuntu/casopractico2/casopractico2/ansible/playbooksPullsCreds/pullcredacr.yml
 
+# Extraer info de AKS
+
+ansible-playbook /home/ubuntu/casopractico2/casopractico2/ansible/playbooksPullsCreds/pullrgaks.yml
+
+# Configurar Kube
+
+ansible-playbook /home/ubuntu/casopractico2/casopractico2/ansible/playbooksDespligues/config_kube.yml
+
 # Genera el archivo de inventario hosts.yml usando yq para leer de vm_details.yml
 VM_PUBLIC_IP=$(yq e '.vm_public_ip' ../../vm_details.yml)
 

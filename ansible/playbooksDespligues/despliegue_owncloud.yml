@@ -1,0 +1,82 @@
+- name: Desplegar ownCloud en AKS
+  hosts: localhost
+  gather_facts: no
+  vars_files:
+    - /home/ubuntu/casopractico2/casopractico2/acr_details.yml
+  tasks:
+  - name: Crear namespace
+    community.kubernetes.k8s:
+      kubeconfig: "~/.kube/config"
+      state: present
+      api_version: v1
+      kind: Namespace
+      name: owncloud
+
+  - name: Crear volumen persistente
+    community.kubernetes.k8s:
+      kubeconfig: "~/.kube/config"
+      state: present
+      definition:
+        apiVersion: v1
+        kind: PersistentVolumeClaim
+        metadata:
+          name: owncloud-pvc
+          namespace: owncloud
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 10Gi
+
+  - name: Desplegar ownCloud
+    community.kubernetes.k8s:
+      kubeconfig: "~/.kube/config"
+      state: present
+      definition:
+        apiVersion: apps/v1
+        kind: Deployment
+        metadata:
+          name: owncloud
+          namespace: owncloud
+        spec:
+          selector:
+            matchLabels:
+              app: owncloud
+          replicas: 1
+          template:
+            metadata:
+              labels:
+                app: owncloud
+            spec:
+              containers:
+              - name: owncloud
+                image: "{{ login_server }}/owncloud:latest"
+                ports:
+                - containerPort: 80
+                volumeMounts:
+                - mountPath: "/var/www/html"
+                  name: owncloud-storage
+              volumes:
+              - name: owncloud-storage
+                persistentVolumeClaim:
+                  claimName: owncloud-pvc
+
+  - name: Exponer ownCloud
+    community.kubernetes.k8s:
+      kubeconfig: "~/.kube/config"
+      state: present
+      definition:
+        apiVersion: v1
+        kind: Service
+        metadata:
+          name: owncloud
+          namespace: owncloud
+        spec:
+          selector:
+            app: owncloud
+          ports:
+          - protocol: TCP
+            port: 80
+            targetPort: 80
+          type: LoadBalancer

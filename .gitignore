@@ -4,3 +4,5 @@ terraform/.terraform.lock.hcl
 acr_details.yml
 acr_creds.yml
 vm_details.yml
+ansible/scripts/hosts.yml
+aks_variables.yml

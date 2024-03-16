@@ -1,0 +1,30 @@
+---
+- name: Obtener nombres de grupo de recursos y AKS clusters y guardar como variables
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: Listar grupos de recursos
+      azure_rm_resourcegroup_info:
+      register: rg_info
+
+    - name: Listar clusters de AKS en todos los grupos de recursos
+      azure_rm_aks_info:
+        resource_group: "{{ item.name }}"
+      loop: "{{ rg_info.resourcegroups }}"
+      register: aks_info_raw
+
+    - name: Filtrar clusters de AKS existentes
+      set_fact:
+        aks_info: "{{ aks_info_raw.results | selectattr('aks', 'defined') | list }}"
+      when: aks_info_raw.results | map(attribute='aks') | select('defined') | list | length > 0
+
+    - name: Guardar nombres de clusters de AKS y sus grupos de recursos como variables en un archivo
+      copy:
+        dest: "~/casopractico2/casopractico2/aks_variables.yml"
+        content: |
+          {% for aks_result in aks_info %}
+          {% if aks_result.aks %}
+          aks_cluster_name: "{{ aks_result.aks[0].name }}"
+          resource_group_name: "{{ aks_result.item.name }}"
+          {% endif %}
+          {% endfor %}

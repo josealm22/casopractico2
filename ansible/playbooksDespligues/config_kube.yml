@@ -1,0 +1,15 @@
+---
+- name: Configurar kubectl con credenciales de AKS
+  hosts: localhost
+  gather_facts: no
+  vars_files:
+    - ~/casopractico2/casopractico2/aks_variables.yml
+
+  tasks:
+    - name: Obtener credenciales de AKS y configurar kubectl
+      command: az aks get-credentials --resource-group "{{ resource_group_name }}" --name "{{ aks_cluster_name }}" --overwrite-existing
+      register: get_credentials_output
+
+    - name: Mostrar salida del comando
+      debug:
+        var: get_credentials_output.stdout
