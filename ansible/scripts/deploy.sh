@@ -5,17 +5,17 @@ cd "$(dirname "$0")"
 
 # Ejecución de playbook para extraer ip y guradarla en ../vm_details.yml
 
-/home/ubuntu/casopractico2/casopractico2/ansible/playbooksPullCreds/ansible-playbook extraerip.yml
+ansible-playbook /home/ubuntu/casopractico2/casopractico2/ansible/playbooksPullsCreds/extraerip.yml
 
 
 # Extraer credenciales de ACR 
 
-/home/ubuntu/casopractico2/casopractico2/ansible/playbooksPullCreds/ansible-playbook pullcredacr.yml
+ansible-playbook /home/ubuntu/casopractico2/casopractico2/ansible/playbooksPullsCreds/pullcredacr.yml
 
 # Genera el archivo de inventario hosts.yml usando yq para leer de vm_details.yml
 VM_PUBLIC_IP=$(yq e '.vm_public_ip' ../../vm_details.yml)
 
-cat << EOF > /home/ubuntu/casopractico2/casopractico2/ansible/playbooksDespligues/hosts.yml
+cat << EOF > hosts.yml
 all:
   children:
     webservers:
@@ -27,4 +27,4 @@ all:
 EOF
 
 # Ejecuta el playbook maestro de Ansible
-ansible-playbook -i /home/ubuntu/casopractico2/casopractico2/ansible/playbooksDespliegues/hosts.yml /home/ubuntu/casopractico2/casopractico2/ansible/playbooksDespliegues/playbook_maestro.yml
+ansible-playbook -i hosts.yml /home/ubuntu/casopractico2/casopractico2/ansible/playbooksDespligues/playbook_maestro.yml
