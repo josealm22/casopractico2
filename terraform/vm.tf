@@ -39,6 +39,10 @@ resource "azurerm_linux_virtual_machine" "myVM1" {
 	tags = {
 		environment = "CP2"
 	}
+	depends_on = [
+    	  azurerm_network_interface.myNic1
+  	]
+
 }		
 
 resource "null_resource" "add_ssh_key" {

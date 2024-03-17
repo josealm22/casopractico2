@@ -21,16 +21,17 @@
 
     - name: Extraer imagen de Nginx desde ACR
       ansible.builtin.command: >
-        podman pull "{{ login_server }}/nginx:latest"
+        podman pull "{{ login_server }}/nginx-numeros:latest"
 
 
     - name: Iniciar contenedor Nginx desde ACR
       containers.podman.podman_container:
         name: nginx
-        image: "{{ login_server }}/nginx:latest"
+        image: "{{ login_server }}/nginx-numeros:latest"
         state: started
         ports:
           - "80:80"
+          - "443:443"
         env:
           ACR_USERNAME: "{{ acr_username }}"
           ACR_PASSWORD: "{{ acr_password }}"

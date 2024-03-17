@@ -21,6 +21,18 @@ resource "azurerm_subnet" "mySubnet" {
 	address_prefixes	= ["10.0.1.0/24"]
 }
 
+
+# Pausa 
+resource "null_resource" "delay_after_subnet" {
+  depends_on = [azurerm_subnet.mySubnet]
+
+  provisioner "local-exec" {
+    command = "sleep 30"
+  }
+}
+
+
+
 # Nic
 
 resource "azurerm_network_interface" "myNic1" {
@@ -36,6 +48,9 @@ resource "azurerm_network_interface" "myNic1" {
 		public_ip_address_id		= azurerm_public_ip.myPublicIp1.id
 		}
 	
+
+	depends_on = [null_resource.delay_after_subnet]
+
 	tags = {
 		environment = "CP2"
 	}
