@@ -22,15 +22,6 @@ resource "azurerm_subnet" "mySubnet" {
 }
 
 
-# Pausa 
-resource "null_resource" "delay_after_subnet" {
-  depends_on = [azurerm_subnet.mySubnet]
-
-  provisioner "local-exec" {
-    command = "sleep 30"
-  }
-}
-
 
 
 # Nic
@@ -49,7 +40,6 @@ resource "azurerm_network_interface" "myNic1" {
 		}
 	
 
-	depends_on = [null_resource.delay_after_subnet]
 
 	tags = {
 		environment = "CP2"
