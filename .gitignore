@@ -6,3 +6,4 @@ acr_creds.yml
 vm_details.yml
 ansible/scripts/hosts.yml
 aks_variables.yml
+terraform_tfstate
